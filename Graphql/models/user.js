@@ -15,12 +15,26 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Password must be at least 8 characters long!"],
     select: false,
   },
+  confirmPassword: {
+    type: String,
+    required: [true, "Please confirm your password!"],
+    validate: {
+      // This only works on create() and save()
+      validator: function (value) {
+        return value === this.password;
+      },
+      message: "Incorrect password confirmation!",
+    },
+    select: false,
+  },
   rooms: [
     {
       roomId: {
         type: mongoose.Schema.Types.ObjectId,
         required: [true, "A room must have an ID!"],
         ref: "Room",
+        index: true,
+        sparse: true,
       },
     },
   ],
@@ -29,6 +43,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 12);
+    this.confirmPassword = undefined;
   }
   next();
 });
