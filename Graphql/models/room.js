@@ -5,16 +5,15 @@ const roomSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "A room must have a name!"],
+    unique: true,
   },
-  // members: [
-  //   {
-  //     userId: {
-  //       type: mongoose.Schema.Types.ObjectId,
-  //       required: [true, "A member must have an ID!"],
-  //       ref: "User",
-  //     },
-  //   },
-  // ],
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "A room must have an owner!"],
+    ref: "User",
+    index: true,
+    sparse: true,
+  },
 });
 
 const Room = mongoose.model("Room", roomSchema);

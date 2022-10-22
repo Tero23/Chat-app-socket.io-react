@@ -1,21 +1,39 @@
-const express = require("express");
-const { graphqlHTTP } = require("express-graphql");
-const schema = require("./schema/schema");
-const db = require("./db/connection");
+require("dotenv").config();
 const cors = require("cors");
+const express = require("express");
+const colors = require("colors");
+const { ApolloServer } = require("apollo-server-express");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: ["https://studio.apollographql.com", "http://localhost:3000/graphql"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema,
-    graphiql: true,
-  })
-);
+const typeDefs = require("./schema/TypeDefs");
+const resolvers = require("./schema/Resolvers");
+const connectDB = require("./db/connection");
 
-app.listen(3002, () => {
-  console.log("Graphql server is up and running at port 3002...");
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  graphiql: true,
+  context: ({ req, res }) => ({ req, res }),
+});
+
+connectDB();
+
+const port = 3002;
+
+server.start().then(() => {
+  server.applyMiddleware({
+    app,
+    path: "/graphql",
+    cors: false,
+  });
+  app.listen({ port }, () => console.log(`Server running at port: ${port}`));
 });

@@ -7,6 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@apollo/client";
 import { ADD_USER_MUTATION } from "./queries/queries";
+import { Link } from "react-router-dom";
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -65,7 +66,6 @@ const Register = () => {
       setErrMsg("Invalid Entry!");
       return;
     }
-    console.log(user, pwd, matchPwd);
     addUser({
       variables: {
         username: user,
@@ -80,10 +80,9 @@ const Register = () => {
     <>
       {success ? (
         <section>
-          <h1>Success!</h1>
-          <p>
-            <a href="#">Sign In</a>
-          </p>
+          <nav>
+            <Link to="/chat">Chat rooms</Link>
+          </nav>
         </section>
       ) : (
         <section>
@@ -206,8 +205,7 @@ const Register = () => {
             Already registered?
             <br />
             <span className="line">
-              {/*put router link here*/}
-              <a href="#">Sign In</a>
+              <Link to="/login">Sign In</Link>
             </span>
           </p>
         </section>

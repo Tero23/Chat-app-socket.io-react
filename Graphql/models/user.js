@@ -13,20 +13,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide a password!"],
     minlength: [8, "Password must be at least 8 characters long!"],
-    select: false,
+    // select: false,
   },
-  confirmPassword: {
-    type: String,
-    required: [true, "Please confirm your password!"],
-    validate: {
-      // This only works on create() and save()
-      validator: function (value) {
-        return value === this.password;
-      },
-      message: "Incorrect password confirmation!",
-    },
-    select: false,
-  },
+
   rooms: [
     {
       roomId: {
