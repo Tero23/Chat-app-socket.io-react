@@ -1,36 +1,23 @@
-import "./App.css";
+import "../App.css";
 import io from "socket.io-client";
-import { useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
-import {
-  ADD_ROOM_MUTATION,
-  GET_USERS_QUERY,
-  GET_USER_QUERY,
-  GET_ROOM_QUERY,
-} from "./queries/queries";
-import Chat from "./Chat";
+import { useState, useContext } from "react";
+import { SignInContext } from "../context/SignInContext";
+
+import Chat from "../Chat";
 
 const socket = io.connect("http://localhost:3001");
 
 function App() {
-  const [username, setUsername] = useState("");
+  const { username, setUsername } = useContext(SignInContext);
   const [room, setRoom] = useState("");
   const [showChat, setShowChat] = useState(false);
 
-  const { loading, error, data } = useQuery(GET_USERS_QUERY);
-
-  if (loading) return <p>Loading...</p>;
-
-  console.log(data.users.some((obj) => obj.username === "Tero"));
-
   const joinRoom = () => {
     if (username !== "" && room !== "") {
-      if (data.users.some((obj) => obj.username === username)) {
-        socket.emit("join_room", room);
-        setShowChat(true);
-      } else {
-        return <p>Username Not registered!!</p>;
-      }
+      socket.emit("join_room", room);
+      setShowChat(true);
+    } else {
+      return <p>Username Not registered!!</p>;
     }
   };
 

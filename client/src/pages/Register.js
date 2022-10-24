@@ -1,4 +1,5 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
+import { SignInContext } from "../context/SignInContext";
 import {
   faCheck,
   faTimes,
@@ -6,8 +7,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation } from "@apollo/client";
-import { ADD_USER_MUTATION } from "./queries/queries";
-import { Link } from "react-router-dom";
+import { ADD_USER_MUTATION } from "../queries/queries";
+import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -16,7 +18,11 @@ const Register = () => {
   const userRef = useRef();
   const errRef = useRef();
 
-  const [user, setUser] = useState("");
+  const navigate = useNavigate();
+
+  const { username, setUsername, isLoggedIn, setIsLoggedIn } =
+    useContext(SignInContext);
+
   const [validName, setvalidName] = useState(false);
   const [userFocus, setUserFocus] = useState(false);
 
@@ -29,9 +35,14 @@ const Register = () => {
   const [matchFocus, setMatchFocus] = useState(false);
 
   const [errMsg, setErrMsg] = useState("");
-  const [success, setSuccess] = useState(false);
 
-  const [addUser, { error }] = useMutation(ADD_USER_MUTATION);
+  const [addUser, { error }] = useMutation(ADD_USER_MUTATION, {
+    variables: {
+      username: username,
+      password: pwd,
+      confirmPassword: matchPwd,
+    },
+  });
 
   if (error) {
     setErrMsg("Submission Error!");
@@ -42,9 +53,9 @@ const Register = () => {
   }, []);
 
   useEffect(() => {
-    const result = USER_REGEX.test(user);
+    const result = USER_REGEX.test(username);
     setvalidName(result);
-  }, [user]);
+  }, [username]);
 
   useEffect(() => {
     const result = PWD_REGEX.test(pwd);
@@ -55,35 +66,25 @@ const Register = () => {
 
   useEffect(() => {
     setErrMsg("");
-  }, [user, pwd, matchPwd]);
+  }, [username, pwd, matchPwd]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // if button enabled with JS hack
-    const v1 = USER_REGEX.test(user);
+    const v1 = USER_REGEX.test(username);
     const v2 = PWD_REGEX.test(pwd);
     if (!v1 || !v2) {
       setErrMsg("Invalid Entry!");
       return;
     }
-    addUser({
-      variables: {
-        username: user,
-        password: pwd,
-        confirmPassword: matchPwd,
-      },
-    });
-    setSuccess(true);
+    addUser();
+    if (Cookies.get().id) setIsLoggedIn(true);
   };
 
   return (
     <>
-      {success ? (
-        <section>
-          <nav>
-            <Link to="/chat">Chat rooms</Link>
-          </nav>
-        </section>
+      {isLoggedIn ? (
+        navigate("/rooms")
       ) : (
         <section>
           <p
@@ -100,7 +101,7 @@ const Register = () => {
               <span className={validName ? "valid" : "hide"}>
                 <FontAwesomeIcon icon={faCheck} />
               </span>
-              <span className={validName || !user ? "hide" : "invalid"}>
+              <span className={validName || !username ? "hide" : "invalid"}>
                 <FontAwesomeIcon icon={faTimes} />
               </span>
             </label>
@@ -109,7 +110,7 @@ const Register = () => {
               id="username"
               ref={userRef}
               autoComplete="off"
-              onChange={(e) => setUser(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               required
               aria-invalid={validName ? "false" : "true"}
               aria-describedby="uidnote"
@@ -119,7 +120,9 @@ const Register = () => {
             <p
               id="uidnote"
               className={
-                userFocus && user && !validName ? "instructions" : "offscreen"
+                userFocus && username && !validName
+                  ? "instructions"
+                  : "offscreen"
               }
             >
               <FontAwesomeIcon icon={faInfoCircle} />

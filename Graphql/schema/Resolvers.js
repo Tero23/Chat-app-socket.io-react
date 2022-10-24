@@ -82,18 +82,24 @@ const resolvers = {
         errors.general = "Wrong Credentials!";
         throw new UserInputError("Wrong Credentials!");
       }
-      const match = await bcrypt.compare(password, user.password);
+      const match = await user.correctPassword(password, user.password);
       if (!match) {
         errors.general = "Wrong Credentials!";
         throw new UserInputError("Wrong Credentials!");
       }
       const token = generateToken(user);
-      res.cookie("token", token, {
-        maxAge: 5 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: true,
-        secure: process.env.NODE_ENV === "production",
-      });
+      res
+        .cookie("token", token, {
+          maxAge: 5 * 60 * 60 * 1000,
+          httpOnly: true,
+          sameSite: true,
+          secure: process.env.NODE_ENV === "production",
+        })
+        .cookie("id", user.id, {
+          maxAge: 5 * 60 * 60 * 1000,
+          sameSite: "none",
+          secure: true,
+        });
       return {
         ...user._doc,
         id: user._id,
@@ -124,7 +130,6 @@ const resolvers = {
           },
         });
       }
-      password = await bcrypt.hash(password, 12);
       const newUser = new User({
         username,
         password,
@@ -133,12 +138,18 @@ const resolvers = {
 
       user = await newUser.save();
       const token = generateToken(user);
-      res.cookie("token", token, {
-        maxAge: 5 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: true,
-        secure: process.env.NODE_ENV === "production",
-      });
+      res
+        .cookie("token", token, {
+          maxAge: 5 * 60 * 60 * 1000,
+          // httpOnly: true,
+          sameSite: true,
+          secure: process.env.NODE_ENV === "production",
+        })
+        .cookie("id", user.id, {
+          maxAge: 5 * 60 * 60 * 1000,
+          sameSite: "none",
+          secure: true,
+        });
 
       return {
         ...user._doc,

@@ -1,14 +1,27 @@
-import { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useRef, useState, useEffect, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { SignInContext } from "../context/SignInContext";
+import { LOGIN_USER_MUTATION } from "../queries/queries";
+import { useMutation } from "@apollo/client";
+import Cookie from "js-cookie";
 
 const Login = () => {
   const userRef = useRef();
   const errRef = useRef();
 
-  const [user, setUser] = useState("");
+  const navigate = useNavigate();
+
+  const { username, setUsername, isLoggedIn, setIsLoggedIn } =
+    useContext(SignInContext);
   const [pwd, setPwd] = useState("");
   const [errMsg, setErrMsg] = useState("");
-  const [success, setSuccess] = useState(false);
+
+  const [loginUser, { error, loading }] = useMutation(LOGIN_USER_MUTATION, {
+    variables: {
+      username,
+      password: pwd,
+    },
+  });
 
   useEffect(() => {
     userRef.current.focus();
@@ -16,25 +29,23 @@ const Login = () => {
 
   useEffect(() => {
     setErrMsg("");
-  }, [user, pwd]);
+  }, [username, pwd]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setUser("");
+    loginUser();
+    setUsername("");
     setPwd("");
-    setSuccess(true);
+    if (Cookie.get().id) setIsLoggedIn(true);
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Something went wrong!</p>;
 
   return (
     <>
-      {success ? (
-        <section>
-          <h1>You are Logged In!</h1>
-          <br />
-          <p>
-            <Link to="/chat">Go to chat</Link>
-          </p>
-        </section>
+      {isLoggedIn ? (
+        navigate("/rooms")
       ) : (
         <section>
           <p
@@ -52,8 +63,8 @@ const Login = () => {
               id="username"
               ref={userRef}
               autoComplete="off"
-              onChange={(e) => setUser(e.target.value)}
-              value={user}
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
               required
             />
             <label htmlFor="password">Password:</label>

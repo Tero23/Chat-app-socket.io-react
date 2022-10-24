@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 const GET_USERS_QUERY = gql`
   query GetUsers {
-    users {
+    getUsers {
       username
       id
       rooms {
@@ -14,17 +14,21 @@ const GET_USERS_QUERY = gql`
 `;
 
 const GET_ROOMS_QUERY = gql`
-  query GetRooms {
-    rooms {
+  query {
+    getRooms {
       name
       id
+      owner {
+        username
+        id
+      }
     }
   }
 `;
 
 const GET_USER_QUERY = gql`
-  query ($id: ID!) {
-    user(id: $id) {
+  query GetUser {
+    getUser {
       id
       username
       rooms {
@@ -36,11 +40,27 @@ const GET_USER_QUERY = gql`
 `;
 
 const GET_ROOM_QUERY = gql`
-  query ($id: ID!) {
-    room(id: $id) {
+  query Rooms($id: ID!) {
+    getRoom(id: $id) {
       id
       name
+      owner {
+        username
+        id
+      }
     }
+  }
+`;
+
+const DELETE_USER_QUERY = gql`
+  query {
+    deleteUser
+  }
+`;
+
+const LOGOUT_USER_QUERY = gql`
+  query {
+    logoutUser
   }
 `;
 
@@ -61,28 +81,35 @@ const ADD_USER_MUTATION = gql`
   }
 `;
 
-const ADD_ROOM_MUTATION = gql`
-  mutation ($name: String!, $userId: ID!) {
-    addRoom(name: $name, userId: $userId) {
-      name
+const LOGIN_USER_MUTATION = gql`
+  mutation ($username: String!, $password: String!) {
+    loginUser(username: $username, password: $password) {
+      username
       id
+      rooms {
+        name
+        id
+      }
     }
   }
 `;
 
-const DELETE_USER_MUTATION = gql`
-  mutation ($id: ID!) {
-    deleteUser(id: $id) {
+const ADD_ROOM_MUTATION = gql`
+  mutation ($name: String!) {
+    addRoom(name: $name) {
       name
+      id
+      owner {
+        username
+        id
+      }
     }
   }
 `;
 
 const DELETE_ROOM_MUTATION = gql`
   mutation ($id: ID!) {
-    deleteRoom(id: $id) {
-      name
-    }
+    deleteRoom(id: $id)
   }
 `;
 
@@ -91,8 +118,10 @@ export {
   GET_ROOMS_QUERY,
   GET_USER_QUERY,
   GET_ROOM_QUERY,
+  DELETE_USER_QUERY,
+  LOGOUT_USER_QUERY,
   ADD_USER_MUTATION,
-  DELETE_USER_MUTATION,
+  LOGIN_USER_MUTATION,
   ADD_ROOM_MUTATION,
   DELETE_ROOM_MUTATION,
 };

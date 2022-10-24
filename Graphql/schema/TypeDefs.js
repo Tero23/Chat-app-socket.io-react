@@ -9,6 +9,7 @@ const typeDefs = gql`
   type Room {
     id: ID!
     name: String!
+    owner: User!
   }
   type Query {
     getUsers: [User]

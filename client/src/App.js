@@ -5,11 +5,16 @@ import {
   ApolloProvider,
   createHttpLink,
 } from "@apollo/client";
-import NotFound from "./NotFound";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useState } from "react";
+import NotFound from "./pages/NotFound";
 import Header from "./Header";
-import Register from "./Register";
-import ChatPage from "./ChatPage";
-import Login from "./Login";
+import Register from "./pages/Register";
+import ChatPage from "./pages/ChatPage";
+import Login from "./pages/Login";
+import ProtectedRoutes from "./context/ProtectedRoutes";
+import { SignInContext } from "./context/SignInContext";
+import Rooms from "./pages/Rooms";
 
 const link = createHttpLink({
   uri: "http://localhost:3002/graphql",
@@ -22,17 +27,26 @@ const client = new ApolloClient({
 });
 
 function App() {
+  const [username, setUsername] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <>
-      <ApolloProvider client={client}>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ApolloProvider>
+      <SignInContext.Provider
+        value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}
+      >
+        <ApolloProvider client={client}>
+          <Header />
+          <Routes>
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/rooms" element={<Rooms />} />
+            </Route>
+            <Route path="/" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ApolloProvider>
+      </SignInContext.Provider>
     </>
   );
 }

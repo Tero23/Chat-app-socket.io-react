@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 
 const corsOptions = {
-  origin: ["https://studio.apollographql.com", "http://localhost:3000/graphql"],
+  origin: ["https://studio.apollographql.com", "http://localhost:3000"],
   credentials: true,
 };
 app.use(cors(corsOptions));

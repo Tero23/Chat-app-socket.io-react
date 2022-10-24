@@ -305,3 +305,16 @@ button {
 .line {
   display: inline-block;
 }
+
+.roomList {
+  text-align: left;
+  color: blue;
+  justify-content: left;
+  align-items: unset;
+  margin-right: 0px;
+  margin-left: 0px;
+  padding-right: 0px;
+  padding-left: 0px;
+  place-items: left;
+  float: left;
+}
