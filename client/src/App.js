@@ -8,7 +8,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import NotFound from "./pages/NotFound";
-import Header from "./Header";
+import Header from "./components/Header";
 import Register from "./pages/Register";
 import ChatPage from "./pages/ChatPage";
 import Login from "./pages/Login";
@@ -39,8 +39,8 @@ function App() {
           <Routes>
             <Route element={<ProtectedRoutes />}>
               <Route path="/chat" element={<ChatPage />} />
-              <Route path="/rooms" element={<Rooms />} />
             </Route>
+            <Route path="/rooms" element={<Rooms />} />
             <Route path="/" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />

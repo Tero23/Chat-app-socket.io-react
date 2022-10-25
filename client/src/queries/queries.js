@@ -5,23 +5,15 @@ const GET_USERS_QUERY = gql`
     getUsers {
       username
       id
-      rooms {
-        name
-        id
-      }
     }
   }
 `;
 
 const GET_ROOMS_QUERY = gql`
-  query {
+  query GetRooms {
     getRooms {
       name
       id
-      owner {
-        username
-        id
-      }
     }
   }
 `;
@@ -31,10 +23,6 @@ const GET_USER_QUERY = gql`
     getUser {
       id
       username
-      rooms {
-        id
-        name
-      }
     }
   }
 `;
@@ -44,10 +32,6 @@ const GET_ROOM_QUERY = gql`
     getRoom(id: $id) {
       id
       name
-      owner {
-        username
-        id
-      }
     }
   }
 `;
@@ -73,10 +57,6 @@ const ADD_USER_MUTATION = gql`
     ) {
       username
       id
-      rooms {
-        name
-        id
-      }
     }
   }
 `;
@@ -86,30 +66,22 @@ const LOGIN_USER_MUTATION = gql`
     loginUser(username: $username, password: $password) {
       username
       id
-      rooms {
-        name
-        id
-      }
     }
   }
 `;
 
 const ADD_ROOM_MUTATION = gql`
-  mutation ($name: String!) {
-    addRoom(name: $name) {
+  mutation ($name: String!, $password: String!) {
+    addRoom(name: $name, password: $password) {
       name
       id
-      owner {
-        username
-        id
-      }
     }
   }
 `;
 
 const DELETE_ROOM_MUTATION = gql`
-  mutation ($id: ID!) {
-    deleteRoom(id: $id)
+  mutation ($id: ID!, $password: String!) {
+    deleteRoom(id: $id, password: $password)
   }
 `;
 

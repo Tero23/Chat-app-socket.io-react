@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import { useState, useContext } from "react";
 import { SignInContext } from "../context/SignInContext";
 
-import Chat from "../Chat";
+import Chat from "../components/Chat";
 
 const socket = io.connect("http://localhost:3001");
 

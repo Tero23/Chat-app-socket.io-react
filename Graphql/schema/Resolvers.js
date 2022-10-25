@@ -58,15 +58,17 @@ const resolvers = {
       }
     },
     logout(_, __, { req, res }) {
-      res.cookie("token", "choulouloupppouppaaa", { maxAge: 1 });
+      res
+        .cookie("token", "choulouloupppouppaaa", { maxAge: 1 })
+        .cookie("id", "choulouloupppoupppaaaa", { maxAge: 1 });
       return "Logged Out Successfully!";
     },
     async deleteUser(parent, args, context) {
       const user = await checkAuth(context);
       if (!user) throw new Error("Not Allowed!");
-      await Room.deleteMany({ owner: user.id });
+      // await Room.deleteMany({ owner: user.id });
       await User.findByIdAndRemove(user.id);
-      return `${user.username} deleted successfully with all of his rooms!`;
+      return `${user.username} deleted successfully!`;
     },
   },
   Mutation: {
@@ -156,30 +158,31 @@ const resolvers = {
         id: user._id,
       };
     },
-    async addRoom(parent, { name }, context) {
-      const user = await checkAuth(context);
-      if (!user) throw new Error("Not Allowed!");
+    async addRoom(parent, { name, password }, context) {
+      // const user = await checkAuth(context);
+      // if (!user) throw new Error("Not Allowed!");
       const room = new Room({
         name,
-        owner: user.id,
+        password,
+        // owner: user.id,
       });
       const result = await room.save();
-      const owner = await User.findById(user.id);
-      owner.rooms = owner.rooms.concat({ roomId: room._id });
-      await owner.save();
+      // const owner = await User.findById(user.id);
+      // owner.rooms = owner.rooms.concat({ roomId: room._id });
+      // await owner.save();
       return {
         ...result._doc,
         id: result._id,
       };
     },
-    async deleteRoom(parent, { id }, context) {
+    async deleteRoom(parent, { id, password }, context) {
       const user = await checkAuth(context);
       if (!user) throw new Error("Not Allowed!");
-      const owner = await User.findById(user.id);
-      owner.rooms = owner.rooms.filter(
-        (roomObj) => roomObj.roomId.toString() !== id
-      );
-      await owner.save();
+      // const owner = await User.findById(user.id);
+      // owner.rooms = owner.rooms.filter(
+      //   (roomObj) => roomObj.roomId.toString() !== id
+      // );
+      // await owner.save();
       const room = await Room.findByIdAndRemove(id);
       return `Room ${room.name} deleted successfull!`;
     },

@@ -4,12 +4,12 @@ const typeDefs = gql`
   type User {
     id: String!
     username: String!
-    rooms: [Room]!
+    password: String!
   }
   type Room {
     id: ID!
     name: String!
-    owner: User!
+    password: String!
   }
   type Query {
     getUsers: [User]
@@ -26,8 +26,8 @@ const typeDefs = gql`
       confirmPassword: String!
     ): User!
     loginUser(username: String!, password: String!): User!
-    addRoom(name: String!): Room!
-    deleteRoom(id: ID!): String!
+    addRoom(name: String!, password: String!): Room!
+    deleteRoom(id: ID!, password: String!): String!
   }
 `;
 

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const Room = require("./room");
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -16,17 +15,17 @@ const userSchema = new mongoose.Schema({
     // select: false,
   },
 
-  rooms: [
-    {
-      roomId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: [true, "A room must have an ID!"],
-        ref: "Room",
-        index: true,
-        sparse: true,
-      },
-    },
-  ],
+  // rooms: [
+  //   {
+  //     roomId: {
+  //       type: mongoose.Schema.Types.ObjectId,
+  //       required: [true, "A room must have an ID!"],
+  //       ref: "Room",
+  //       index: true,
+  //       sparse: true,
+  //     },
+  //   },
+  // ],
 });
 
 userSchema.pre("save", async function (next) {

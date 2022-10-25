@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const User = require("./user");
 
 const roomSchema = new mongoose.Schema({
   name: {
@@ -7,13 +6,18 @@ const roomSchema = new mongoose.Schema({
     required: [true, "A room must have a name!"],
     unique: true,
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: [true, "A room must have an owner!"],
-    ref: "User",
-    index: true,
-    sparse: true,
+  password: {
+    type: String,
+    required: [true, "A room must have a password!"],
+    minlength: [8, "Password must be at least 8 characters long!"],
   },
+  // owner: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: [true, "A room must have an owner!"],
+  //   ref: "User",
+  //   index: true,
+  //   sparse: true,
+  // },
 });
 
 const Room = mongoose.model("Room", roomSchema);
