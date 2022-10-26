@@ -34,10 +34,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     loginUser();
-    setUsername("");
     setPwd("");
-    if (Cookie.get().id) setIsLoggedIn(true);
   };
+  if (Cookie.get().id) setIsLoggedIn(true);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Something went wrong!</p>;
@@ -47,7 +46,7 @@ const Login = () => {
       {isLoggedIn ? (
         navigate("/rooms")
       ) : (
-        <section>
+        <section className="register-form-body">
           <p
             ref={errRef}
             className={errMsg ? "errmsg" : "offscreen"}

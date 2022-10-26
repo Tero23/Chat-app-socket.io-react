@@ -86,7 +86,7 @@ const Register = () => {
       {isLoggedIn ? (
         navigate("/rooms")
       ) : (
-        <section>
+        <section className="register-form-body">
           <p
             ref={errRef}
             className={errMsg ? "errmsg" : "offscreen"}

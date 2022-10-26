@@ -1,13 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import io from "socket.io-client";
 import ScrollToBottom from "react-scroll-to-bottom";
+import { SignInContext } from "../context/SignInContext";
 
-const Chat = ({ socket, username, room }) => {
+const socket = io.connect("http://localhost:3001");
+
+const Chat = () => {
+  const { username, roomName } = useContext(SignInContext);
+
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   const sendMessage = async () => {
+    console.log(username, roomName);
+    socket.emit("join_room", roomName);
     if (currentMessage !== "") {
       const messageData = {
-        room,
+        room: roomName,
         author: username,
         message: currentMessage,
         time:
@@ -25,7 +33,7 @@ const Chat = ({ socket, username, room }) => {
     socket.on("receive_message", (data) => {
       setMessageList((list) => [...list, data]);
     });
-  }, [socket]);
+  });
 
   return (
     <div className="chat-window">

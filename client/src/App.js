@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import ProtectedRoutes from "./context/ProtectedRoutes";
 import { SignInContext } from "./context/SignInContext";
 import Rooms from "./pages/Rooms";
+import Chat from "./pages/Chat";
 
 const link = createHttpLink({
   uri: "http://localhost:3002/graphql",
@@ -29,18 +30,27 @@ const client = new ApolloClient({
 function App() {
   const [username, setUsername] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [roomName, setRoomName] = useState("");
   return (
     <>
       <SignInContext.Provider
-        value={{ username, setUsername, isLoggedIn, setIsLoggedIn }}
+        value={{
+          username,
+          setUsername,
+          isLoggedIn,
+          setIsLoggedIn,
+          roomName,
+          setRoomName,
+        }}
       >
         <ApolloProvider client={client}>
           <Header />
           <Routes>
             <Route element={<ProtectedRoutes />}>
-              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/joinRoom" element={<ChatPage />} />
+              <Route path="/rooms" element={<Rooms />} />
+              <Route path="/chat" element={<Chat />} />
             </Route>
-            <Route path="/rooms" element={<Rooms />} />
             <Route path="/" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />

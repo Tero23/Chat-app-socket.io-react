@@ -16,7 +16,6 @@ const typeDefs = gql`
     getUser: User
     getRooms: [Room]
     getRoom(id: ID!): Room
-    logout: String
     deleteUser: String
   }
   type Mutation {
@@ -27,7 +26,9 @@ const typeDefs = gql`
     ): User!
     loginUser(username: String!, password: String!): User!
     addRoom(name: String!, password: String!): Room!
+    joinRoom(name: String!, password: String!): Room!
     deleteRoom(id: ID!, password: String!): String!
+    logout: String!
   }
 `;
 

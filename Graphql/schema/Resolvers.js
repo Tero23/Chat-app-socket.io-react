@@ -11,11 +11,21 @@ const {
   validateLoginInput,
 } = require("../utils/validators");
 
-const generateToken = (user) => {
+const generateUserToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
       username: user.username,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+};
+const generateRoomToken = (room) => {
+  return jwt.sign(
+    {
+      id: room.id,
+      name: room.name,
     },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
@@ -57,12 +67,7 @@ const resolvers = {
         throw new Error(error.message, 400);
       }
     },
-    logout(_, __, { req, res }) {
-      res
-        .cookie("token", "choulouloupppouppaaa", { maxAge: 1 })
-        .cookie("id", "choulouloupppoupppaaaa", { maxAge: 1 });
-      return "Logged Out Successfully!";
-    },
+    
     async deleteUser(parent, args, context) {
       const user = await checkAuth(context);
       if (!user) throw new Error("Not Allowed!");
@@ -89,7 +94,7 @@ const resolvers = {
         errors.general = "Wrong Credentials!";
         throw new UserInputError("Wrong Credentials!");
       }
-      const token = generateToken(user);
+      const token = generateUserToken(user);
       res
         .cookie("token", token, {
           maxAge: 5 * 60 * 60 * 1000,
@@ -139,7 +144,7 @@ const resolvers = {
       });
 
       user = await newUser.save();
-      const token = generateToken(user);
+      const token = generateUserToken(user);
       res
         .cookie("token", token, {
           maxAge: 5 * 60 * 60 * 1000,
@@ -175,6 +180,35 @@ const resolvers = {
         id: result._id,
       };
     },
+    async joinRoom(parent, { name, password }, { req, res }) {
+      const room = await Room.findOne({ name });
+      if (!room) {
+        errors.general = "Wrong Credentials!";
+        throw new UserInputError("Wrong Credentials!");
+      }
+      const match = await room.correctPassword(password, room.password);
+      if (!match) {
+        errors.general = "Wrong Credentials!";
+        throw new UserInputError("Wrong Credentials!");
+      }
+      const token = generateRoomToken(room);
+      res
+        .cookie("roomToken", token, {
+          maxAge: 5 * 60 * 60 * 1000,
+          httpOnly: true,
+          sameSite: true,
+          secure: process.env.NODE_ENV === "production",
+        })
+        .cookie("roomId", room.id, {
+          maxAge: 5 * 60 * 60 * 1000,
+          sameSite: "none",
+          secure: true,
+        });
+      return {
+        ...room._doc,
+        id: room._id,
+      };
+    },
     async deleteRoom(parent, { id, password }, context) {
       const user = await checkAuth(context);
       if (!user) throw new Error("Not Allowed!");
@@ -185,6 +219,12 @@ const resolvers = {
       // await owner.save();
       const room = await Room.findByIdAndRemove(id);
       return `Room ${room.name} deleted successfull!`;
+    },
+    logout(_, __, { req, res }) {
+      res
+        .cookie("token", "choulouloupppouppaaa", { maxAge: 1 })
+        .cookie("id", "choulouloupppoupppaaaa", { maxAge: 1 });
+      return "Logged Out Successfully!";
     },
   },
 };

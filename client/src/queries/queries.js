@@ -42,9 +42,9 @@ const DELETE_USER_QUERY = gql`
   }
 `;
 
-const LOGOUT_USER_QUERY = gql`
-  query {
-    logoutUser
+const LOGOUT_USER_MUTATION = gql`
+  mutation {
+    logout
   }
 `;
 
@@ -79,6 +79,15 @@ const ADD_ROOM_MUTATION = gql`
   }
 `;
 
+const JOIN_ROOM_MUTATION = gql`
+  mutation ($name: String!, $password: String!) {
+    joinRoom(name: $name, password: $password) {
+      name
+      id
+    }
+  }
+`;
+
 const DELETE_ROOM_MUTATION = gql`
   mutation ($id: ID!, $password: String!) {
     deleteRoom(id: $id, password: $password)
@@ -91,9 +100,10 @@ export {
   GET_USER_QUERY,
   GET_ROOM_QUERY,
   DELETE_USER_QUERY,
-  LOGOUT_USER_QUERY,
+  LOGOUT_USER_MUTATION,
   ADD_USER_MUTATION,
   LOGIN_USER_MUTATION,
   ADD_ROOM_MUTATION,
+  JOIN_ROOM_MUTATION,
   DELETE_ROOM_MUTATION,
 };

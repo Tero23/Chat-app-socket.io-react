@@ -1,7 +1,7 @@
-.App {
+.chat-body {
   width: 100vw;
   height: 100vh;
-  background: #fff;
+  background: rgb(205, 87, 87);
   color: #212121;
   font-family: "Open Sans", sans-serif;
   display: grid;
@@ -205,11 +205,18 @@ html {
 }
 
 body {
-  min-height: 100vh;
-  background-color: dodgerblue;
+  background-color: #43a047;
 }
 
-.App {
+.register-form-body {
+  min-height: 100vh;
+  background-color: dodgerblue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .App {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -217,6 +224,16 @@ body {
   min-height: 100vh;
   padding: 1rem 0.5rem;
 }
+
+.App {
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  color: #212121;
+  font-family: "Open Sans", sans-serif;
+  display: grid;
+  place-items: center;
+} */
 
 section {
   width: 100%;
@@ -307,14 +324,14 @@ button {
 }
 
 .roomList {
-  text-align: left;
-  color: blue;
-  justify-content: left;
-  align-items: unset;
-  margin-right: 0px;
-  margin-left: 0px;
-  padding-right: 0px;
-  padding-left: 0px;
-  place-items: left;
-  float: left;
+  background-color: #2e7d32;
+}
+
+header {
+  background-color: #fff;
+  text-align: center;
+}
+
+.add-room {
+  background-color: #6ac46e;
 }

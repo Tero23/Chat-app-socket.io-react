@@ -23,7 +23,7 @@ const AddRoom = () => {
     Navigate("/chat");
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="add-room">
       <h1>Add Room</h1>
       <label>Room Name: </label>
       <input

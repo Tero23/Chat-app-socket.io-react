@@ -1,45 +1,81 @@
 import "../App.css";
-import io from "socket.io-client";
-import { useState, useContext } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { SignInContext } from "../context/SignInContext";
-
-import Chat from "../components/Chat";
-
-const socket = io.connect("http://localhost:3001");
+import { useNavigate } from "react-router-dom";
+import Cookie from "js-cookie";
+import { JOIN_ROOM_MUTATION } from "../queries/queries";
+import { useMutation } from "@apollo/client";
 
 function App() {
-  const { username, setUsername } = useContext(SignInContext);
-  const [room, setRoom] = useState("");
-  const [showChat, setShowChat] = useState(false);
+  const userRef = useRef();
 
-  const joinRoom = () => {
-    if (username !== "" && room !== "") {
-      socket.emit("join_room", room);
-      setShowChat(true);
-    } else {
-      return <p>Username Not registered!!</p>;
-    }
+  const navigate = useNavigate();
+
+  const { username, setUsername, roomName, setRoomName } =
+    useContext(SignInContext);
+  const [roomPwd, setRoomPwd] = useState("");
+  const [joinedRoom, setJoinedRoom] = useState(false);
+
+  console.log(roomName);
+
+  const [joinRoom, { error, loading }] = useMutation(JOIN_ROOM_MUTATION, {
+    variables: {
+      name: roomName,
+      password: roomPwd,
+    },
+  });
+
+  // useEffect(() => {
+  //   userRef.current.focus();
+  // }, []);
+
+  if (Cookie.get().roomId) {
+    setJoinedRoom(true);
+    navigate("/chat");
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    joinRoom();
+    setRoomPwd("");
   };
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Something went wrong!</p>;
+
   return (
-    <div className="App">
-      {!showChat ? (
-        <div className="joinChatContainer">
-          <h3>Join A Chat</h3>
+    <div className="chat-body">
+      {!joinedRoom ? (
+        <form className="joinChatContainer" onSubmit={handleSubmit}>
+          <h3>Join {roomName}</h3>
+          {/* <label htmlFor="username">Username:</label>
           <input
             type="text"
-            placeholder="Your Name..."
+            ref={userRef}
+            placeholder="Username"
             onChange={(e) => setUsername(e.target.value)}
+            required
+            value={username}
           />
+          <label htmlFor="roomName">Room:</label>
           <input
             type="text"
-            placeholder="Room ID..."
-            onChange={(e) => setRoom(e.target.value)}
+            placeholder="Room Name"
+            onChange={(e) => setRoomName(e.target.value)}
+            required
+            value={roomName}
+          /> */}
+          <label htmlFor="roomPwd">Password:</label>
+          <input
+            type="password"
+            placeholder="Password"
+            onChange={(e) => setRoomPwd(e.target.value)}
+            required
           />
-          <button onClick={joinRoom}>Join A Room</button>
-        </div>
+          <button>Join A Room</button>
+        </form>
       ) : (
-        <Chat socket={socket} username={username} room={room} />
+        navigate("/chat")
       )}
     </div>
   );
